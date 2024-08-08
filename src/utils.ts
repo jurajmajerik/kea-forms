@@ -81,6 +81,10 @@ export function getTouchErrors(errors: Record<string, any>, touches: Record<stri
     let targetPointer: any = target
 
     while (pathIndex < path.length) {
+      if (!sourcePointer) {
+        break
+      }
+
       let pathElem = path[pathIndex]
 
       if (!targetPointer.hasOwnProperty(pathElem)) {
