@@ -21,13 +21,23 @@ export function deepAssign(state: any, key: FieldName, value: any): any {
   const [current, ...nextPath] = path
   if (Array.isArray(state)) {
     const currentNumber = typeof current === 'string' ? parseInt(current) : current
-    return state.map((element, index) => (index === currentNumber ? deepAssign(element, nextPath, value) : element))
+    const newArray = [...state]
+    if (String(currentNumber) !== 'NaN') {
+      newArray[currentNumber] = deepAssign(state?.[currentNumber] ?? {}, nextPath, value)
+    }
+    return newArray
   }
-  if (typeof state === 'object') {
-    const currentString = typeof current !== 'string' ? current.toString() : current
+  if (typeof state === 'object' && state !== null) {
+    const currentString = String(current)
     return {
       ...state,
-      [currentString]: deepAssign(state[currentString], nextPath, value),
+      [currentString]: deepAssign(state?.[currentString] ?? {}, nextPath, value),
+    }
+  }
+  if (typeof state === 'undefined' || (typeof state === 'object' && state === null)) {
+    const currentString = String(current)
+    return {
+      [currentString]: deepAssign(state?.[currentString] ?? {}, nextPath, value),
     }
   }
   return state
@@ -90,12 +100,12 @@ export function getTouchErrors(errors: Record<string, any>, touches: Record<stri
       if (!targetPointer.hasOwnProperty(pathElem)) {
         // End of path, copy the remainder (may be an object like { key: 'Error message' })
         if (pathIndex === path.length - 1) {
-          if (typeof sourcePointer[pathElem] === 'undefined') {
+          if (typeof sourcePointer?.[pathElem] === 'undefined') {
             targetPointer[pathElem] = undefined
           } else {
-            targetPointer[pathElem] = JSON.parse(JSON.stringify(sourcePointer[pathElem]))
+            targetPointer[pathElem] = JSON.parse(JSON.stringify(sourcePointer?.[pathElem]))
           }
-        } else if (Array.isArray(sourcePointer[pathElem])) {
+        } else if (Array.isArray(sourcePointer?.[pathElem])) {
           targetPointer[pathElem] = []
         } else {
           targetPointer[pathElem] = {}
@@ -103,7 +113,7 @@ export function getTouchErrors(errors: Record<string, any>, touches: Record<stri
       }
 
       targetPointer = targetPointer[pathElem]
-      sourcePointer = sourcePointer[pathElem]
+      sourcePointer = sourcePointer?.[pathElem]
       pathIndex++
     }
   }

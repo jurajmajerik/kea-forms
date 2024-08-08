@@ -1,6 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 3.2.0
+- Editing a field on an object that doesn't exist will now create that field.
+
+## 3.1.4 - 3.1.6
+- Better null handling
+
+## 3.1.3
+- Fix bug from 3.1.2
+ 
+## 3.1.2
+- Support touch-enabled errors for nested fields.
+
 ## 3.1.1
 - Add `canSubmitWithErrors` option
 
